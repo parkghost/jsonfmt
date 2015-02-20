@@ -1,50 +1,33 @@
 package main
 
 import (
-	"bufio"
 	"bytes"
 	"encoding/json"
+	"flag"
 	"io"
 	"log"
 	"os"
-	"unicode"
 )
 
+var compact = flag.Bool("c", false, "Compact the json data")
+
 func main() {
+	flag.Parse()
 	log.SetFlags(0)
+
 	var data interface{}
-	br := bufio.NewReader(os.Stdin)
-
-loop:
-	for {
-		r, _, err := br.ReadRune()
-		if err != nil {
-			log.Fatalf("Failed to read: %s", err)
-		}
-
-		switch {
-		case r == '[': // json array
-			data = make([]map[string]interface{}, 0)
-			br.UnreadRune()
-			break loop
-		case r == '{': // json object
-			data = make(map[string]interface{})
-			br.UnreadRune()
-			break loop
-		case unicode.IsSpace(r): // ignore space
-			continue
-		default:
-			log.Fatal("Invalid json format")
-		}
-	}
-
-	dec := json.NewDecoder(br)
+	dec := json.NewDecoder(os.Stdin)
 	err := dec.Decode(&data)
 	if err != nil {
 		log.Fatalf("Invalid json format: %s", err)
 	}
 
-	b, err := json.MarshalIndent(data, "", "    ")
+	var b []byte
+	if *compact {
+		b, err = json.Marshal(data)
+	} else {
+		b, err = json.MarshalIndent(data, "", "    ")
+	}
 	if err != nil {
 		log.Fatalf("Failed to marshal: %s", err)
 	}

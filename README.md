@@ -2,6 +2,12 @@ jsonfmt
 =======
 *A dead simple json formatter*
 
+### Usage
+```text
+Usage of jsonfmt:
+  -c=false: Compact json data to output
+```
+
 ### Installation
 ```
 go get github.com/parkghost/jsonfmt
