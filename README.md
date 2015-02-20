@@ -5,7 +5,9 @@ jsonfmt
 ### Usage
 ```text
 Usage of jsonfmt:
-  -c=false: Compact json data to output
+  -c=false: Compact the json data
+  -i="stdin": The input file
+  -o="stdout": The output file
 ```
 
 ### Installation
