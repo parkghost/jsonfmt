@@ -35,9 +35,9 @@ func main() {
 
 	var b []byte
 	if *compact {
-		b, err = json.Marshal(data)
+		b, err = safeEncode(json.Marshal(data))
 	} else {
-		b, err = json.MarshalIndent(data, "", "    ")
+		b, err = safeEncode(json.MarshalIndent(data, "", "    "))
 	}
 	if err != nil {
 		log.Fatalf("Failed to marshal: %s", err)
@@ -61,4 +61,15 @@ func file(name string, create bool) (*os.File, error) {
 		}
 		return os.Open(name)
 	}
+}
+
+func safeEncode(b []byte, err error) ([]byte, error) {
+	if err != nil {
+		return nil, err
+	}
+
+	b = bytes.Replace(b, []byte("\\u003c"), []byte("<"), -1)
+	b = bytes.Replace(b, []byte("\\u003e"), []byte(">"), -1)
+	b = bytes.Replace(b, []byte("\\u0026"), []byte("&"), -1)
+	return b, nil
 }
